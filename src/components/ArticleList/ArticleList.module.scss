@@ -1,0 +1,12 @@
+.list {
+  // padding: 26px 250px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  &:not(:first-child) {
+    margin-top: 26px;
+  }
+}

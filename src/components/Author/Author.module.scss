@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin-right: 12px;
+  font-size: 18px;
+  line-height: 28px;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}

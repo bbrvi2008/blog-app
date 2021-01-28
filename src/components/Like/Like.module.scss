@@ -1,0 +1,23 @@
+.container {
+  padding: 0;
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+  width: 16px;
+  height: 16px;
+  background-image: url('../../images/Like-empty.svg');
+
+}
+
+.text {
+  font-size: 12px;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.75);
+}

@@ -1,0 +1,26 @@
+.header {
+  background-color: white;
+  padding: 16px 22px;
+}
+
+.content {
+  padding: 26px 16px;
+
+  @media (min-width: 768px) {
+    padding: 26px 32px;
+  }
+
+  @media (min-width: 1440px) {
+    padding: 26px 250px;
+  }
+}
+
+.container {
+  min-height: calc(100vh - 54px);
+  background-color: #EBEEF3;
+}
+
+.contentWrapper {
+  max-width: 1440px;
+  margin: 0 auto;
+}
