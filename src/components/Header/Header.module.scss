@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 16px 22px;
+}
+
+.logo {
+  font-size: 18px;
+  line-height: 28px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.buttonCreateArticle,
+.buttonSignUp {
+  border-color: #52C41A;
+  color: #52C41A;
+}
+
+.headerMenu {
+  display: flex;
+  align-items: center;
+
+  &Item {
+    & + & {
+      margin-left: 26px;
+    }
+  }
+}

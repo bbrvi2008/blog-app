@@ -1,14 +1,18 @@
-import BaseApiService from './BaseApiService';
+import RealWorldApiService from './RealWorldApiService';
 
-export default class RealWorldApiService extends BaseApiService {
-  baseUrl = 'https://conduit.productionready.io/api';
+export default class ArticlesApiService {
+  constructor() {
+    this.realworldApi = new RealWorldApiService();
+  }
 
   fetchAll = async (page = 1, limit = 20) => {
     const offset = (page - 1) * limit;
-    const { articles, articlesCount } = await this.getResource('/articles', {
+    const { data } = await this.realworldApi.getResource('/articles', {
       offset,
       limit
     });
+
+    const { articles, articlesCount } = data;
 
     return {
       countItems: articlesCount,
@@ -18,7 +22,8 @@ export default class RealWorldApiService extends BaseApiService {
   }
 
   fetchItem = async (slug) => {
-    const { article } = await this.getResource(`/articles/${slug}`);
+    const { data } = await this.realworldApi.getResource(`/articles/${slug}`);
+    const { article } = data;
 
     return {
       item: article

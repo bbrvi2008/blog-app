@@ -16,12 +16,8 @@ const initialState = {
   loading: false
 };
 
-const reducer = (state = initialState, action) => {
-  if(!action) {
-    return state;
-  }
-
-  switch (action.type) {
+export default function reducer(state = initialState, { type, payload }) {
+  switch (type) {
     case ARTICLES_FETCH:
       return {
         ...state,
@@ -30,7 +26,7 @@ const reducer = (state = initialState, action) => {
     case ARTICLES_FETCH_SUCCESS:
       return {
         ...state,
-        ...action.payload,
+        ...payload,
         loading: false
       };
     case ARTICLES_FETCH_FAILURE:
@@ -68,5 +64,3 @@ export const fetchAtricle = (slug) => async dispatch => {
     dispatch(atriclesNotReceived());
   }
 }
-
-export default reducer;
