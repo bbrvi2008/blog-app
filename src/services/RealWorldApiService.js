@@ -26,9 +26,28 @@ export default class RealWorldApiService extends BaseApiService {
     return this.fetchResourceAuth(url, params, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json;charset=utf-8'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
+    });
+  }
+
+  postResourceAuth = (url, data, params) => {
+    return this.fetchResourceAuth(url, params, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+  }
+
+  deleteResourceAuth = (url, params) => {
+    return this.fetchResourceAuth(url, params, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
   }
 }

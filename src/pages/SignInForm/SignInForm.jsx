@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 import { Form, Input, Button, Typography, Spin } from 'antd';
 
 import styles from './SignInForm.module.scss';
@@ -9,13 +9,24 @@ import { authenticationUser } from '../../reducers/user';
 
 const { Text } = Typography;
 
-const SignInForm = ({ loading, hasError, authenticationUser }) => {
-  let history = useHistory();
-
+const SignInForm = ({ isAuthenticated, loading, hasError, authenticationUser, location }) => {
   const handleSubmit = (user) => {
     authenticationUser(user);
+  }
 
-    history.push('/');
+  if(!loading && isAuthenticated) {
+    const { state } = location;
+    if(state?.from) {
+      const { pathname } = state.from;
+
+      return (
+        <Redirect to={ pathname } />
+      )
+    }
+
+    return (
+      <Redirect to="/" />
+    )
   }
 
   const errorElement = hasError
@@ -69,10 +80,11 @@ const SignInForm = ({ loading, hasError, authenticationUser }) => {
 };
 
 const mapStateToProps = ({ user }) => {
-  const { loading, error } = user
+  const { loading, error, user: currentUser } = user;
 
   return {
     loading,
+    isAuthenticated: currentUser != null,
     hasError: !loading && error !== null
   }
 };

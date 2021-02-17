@@ -1,19 +1,44 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useParams, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Alert } from 'antd';
+import { Alert, Modal } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { ArticleItemFull } from '../../components/ArticleItem';
+import { ArticleItemButtons } from '../../components/ArticleItem';
 import Spinner from '../../components/Spinner';
-import { fetchAtricle } from '../../reducers/articles';
+import { fetchAtricle, deleteAtricle } from '../../reducers/articles';
 
-const ArticlePage = ({ article, loading, error, fetchAtricle }) => {
+const ArticlePage = ({ article, deleted, editable, loading, error, fetchAtricle, deleteAtricle }) => {
   const { slug } = useParams();
 
   useEffect(() => {
     fetchAtricle(slug);
   }, [fetchAtricle, slug]);
+
+  const showDeleteConfirm = () => {
+    Modal.confirm({
+      title: 'Are you sure to delete this article?',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        deleteAtricle(slug);
+      }
+    })
+  }
+
+  const handleDelete = () => {
+    showDeleteConfirm();
+  }
+
+  if(deleted) {
+    return (
+      <Redirect to="/" />
+    );
+  }
 
   if(loading) {
     return (
@@ -29,8 +54,14 @@ const ArticlePage = ({ article, loading, error, fetchAtricle }) => {
 
   if(article === null) return null;
 
+  let editButtons = editable
+    ? <ArticleItemButtons slug={slug} onDelete={handleDelete} />
+    : null;
+
   return (
-    <ArticleItemFull {...article} />
+    <ArticleItemFull {...article} >
+      {editButtons}
+    </ArticleItemFull>
   )
 };
 
@@ -48,14 +79,24 @@ ArticlePage.propTypes = {
   fetchAtricle: PropTypes.func
 }
 
-const mapStateToProps = ({ articles }) => {
-  const { item: article, loading, error } = articles;
+const mapStateToProps = ({ articles, user }) => {
+  const { item: article = {}, loading, error, completed } = articles;
 
+  let editable = false;
+  if(article?.author && user?.user) {
+    const { author } = article;
+    const { user: currentUser } = user;
+
+    editable = author.username === currentUser.username;
+  }
+  
   return {
-    article, 
-    loading, 
+    article,
+    editable,
+    deleted: completed,
+    loading,
     error, 
   };
 }
 
-export default connect(mapStateToProps, { fetchAtricle })(ArticlePage);
+export default connect(mapStateToProps, { fetchAtricle, deleteAtricle })(ArticlePage);

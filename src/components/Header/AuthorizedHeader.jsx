@@ -12,7 +12,7 @@ const AuthorizedHeader = ({ user, onLogOut }) => {
 
   return (
     <div className={styles.headerMenu} >
-      <Link to="/" className={styles.headerMenuItem} ><Button className={styles.buttonCreateArticle} >Create article</Button></Link>
+      <Link to="/new-article" className={styles.headerMenuItem} ><Button className={styles.buttonCreateArticle} >Create article</Button></Link>
       <Link to="/profile" className={styles.headerMenuItem} ><Author username={username} image={image} /></Link>
       <Button onClick={onLogOut} className={styles.headerMenuItem} >Log Out</Button>
     </div>

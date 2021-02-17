@@ -1,16 +1,21 @@
 export default class BaseApiService {
-  async fetchResource(url, params = {}, options = {}) {
+  async fetchResource(resource, params = {}, options = {}) {
     if(!this.baseUrl) {
       throw new Error(`baseUrl is empty! Required override in class.`)
     }
 
     const queryParams = Object.entries(params).map(param => param.join('=')).join('&');
 
-    const response = await fetch(`${this.baseUrl}${url}?${queryParams}`, options);
+
+    let url = `${this.baseUrl}${resource}`;
+    if(queryParams.length) {
+      url += `?${queryParams}`
+    }
+    const response = await fetch(url, options);
     
     let processedErrors = [422];
     if(!response.ok && processedErrors.every(errorCode => errorCode !== response.status)) {
-      throw new Error(`Could not fetch ${url}, received ${response.status}`)
+      throw new Error(`Could not fetch ${resource}, received ${response.status}`)
     }
 
     const data = await response.json()

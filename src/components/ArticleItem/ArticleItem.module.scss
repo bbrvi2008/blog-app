@@ -10,7 +10,7 @@
 }
 
 .content {
-  flex: 75%;
+  max-width: 75%;
 }
 
 .body {
@@ -21,9 +21,10 @@
 
 .sidebar {
   display: flex;
+  flex-direction: column;
   justify-content: flex-end;
   margin-bottom: auto;
-  flex: 25%;
+  margin-left: auto;
 }
 
 .row {
@@ -67,4 +68,19 @@
 
 .desctiptionFull {
   color: rgba(0, 0, 0, 0.5);
+}
+
+.buttons {
+  margin-top: 30px;
+}
+
+.button {
+  & + & {
+    margin-left: 12px;
+  }
+}
+
+.buttonEdit {
+  border-color: #52C41A;
+  color: #52C41A;
 }

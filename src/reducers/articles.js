@@ -13,7 +13,8 @@ const initialState = {
   countItems: 0,
   currentPage: 1,
   error: false,
-  loading: false
+  loading: false,
+  completed: false
 };
 
 export default function reducer(state = initialState, { type, payload }) {
@@ -21,7 +22,9 @@ export default function reducer(state = initialState, { type, payload }) {
     case ARTICLES_FETCH:
       return {
         ...state,
-        loading: true
+        item: null,
+        loading: true,
+        completed: false
       };
     case ARTICLES_FETCH_SUCCESS:
       return {
@@ -59,6 +62,36 @@ export const fetchAtricle = (slug) => async dispatch => {
   dispatch(atriclesLoading());
   try {
     const payload = await articlesAPI.fetchItem(slug);
+    dispatch(atriclesReceived(payload));
+  } catch (e) {
+    dispatch(atriclesNotReceived());
+  }
+}
+
+export const createAtricle = (articleData) => async dispatch => {
+  dispatch(atriclesLoading());
+  try {
+    const payload = await articlesAPI.createItem(articleData);
+    dispatch(atriclesReceived(payload));
+  } catch (e) {
+    dispatch(atriclesNotReceived());
+  }
+}
+
+export const updateAtricle = (articleData) => async dispatch => {
+  dispatch(atriclesLoading());
+  try {
+    const payload = await articlesAPI.updateItem(articleData);
+    dispatch(atriclesReceived(payload));
+  } catch (e) {
+    dispatch(atriclesNotReceived());
+  }
+}
+
+export const deleteAtricle = (slug) => async dispatch => {
+  dispatch(atriclesLoading());
+  try {
+    const payload = await articlesAPI.deleteItem(slug);
     dispatch(atriclesReceived(payload));
   } catch (e) {
     dispatch(atriclesNotReceived());

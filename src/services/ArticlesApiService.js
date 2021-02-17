@@ -29,4 +29,34 @@ export default class ArticlesApiService {
       item: article
     };
   }
+
+  createItem = async (articleData) => {
+    const { data } = await this.realworldApi.postResourceAuth('/articles/', articleData);
+    const { article } = data;
+
+    return {
+      item: article,
+      completed: true
+    };
+  }
+
+  updateItem = async (articleData) => {
+    const { slug } = articleData;
+    const { data } = await this.realworldApi.putResourceAuth(`/articles/${slug}`, articleData);
+    const { article } = data;
+
+    return {
+      item: article,
+      completed: true
+    };
+  }
+
+  deleteItem = async (slug) => {
+    await this.realworldApi.deleteResourceAuth(`/articles/${slug}`);
+
+    return {
+      item: null,
+      completed: true
+    };
+  }
 }

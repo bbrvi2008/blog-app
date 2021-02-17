@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { fetchAtricles } from '../../reducers/articles';
 
-import { Pagination, Alert } from 'antd';
+import { Pagination, Spin, Alert } from 'antd';
 import ArticleList from '../../components/ArticleList';
 import Spinner from '../../components/Spinner';
 
@@ -27,18 +27,15 @@ const ArticlesPage = ({ items, loading, error, currentPage, countItems, fetchAtr
     );
   }
 
-  const hasData = !loading && !error;
-  const content = hasData
-    ? <ArticleList articles={items} />
-    : null;
-  const spinner = loading
-    ? <Spinner />
-    : null;
+  if(!items?.length && loading) {
+    return <Spinner />
+  }
 
   return (
     <>
-      {content}
-      {spinner}
+      <Spin spinning={loading} size="large" tip="Loading..." >
+        <ArticleList articles={items} />
+      </Spin>
       <Pagination className={styles.pagination} 
           size="small"
           hideOnSinglePage

@@ -10,7 +10,7 @@ import Like from '../Like';
 
 import styles from './ArticleItem.module.scss';
 
-const ArticleItemFull = ({ title, description, body, createdAt, tagList, favoritesCount, author }) => {
+const ArticleItemFull = ({ title, description, body, createdAt, tagList, favoritesCount, author, children }) => {
   return (<section className={styles.container} >
     <main className={styles.content} >
       <header className={cn(styles.header, styles.row)}>
@@ -23,6 +23,7 @@ const ArticleItemFull = ({ title, description, body, createdAt, tagList, favorit
     </main>
     <aside className={styles.sidebar} >
       <Author {...author} />
+      { children }
     </aside>
     <div className={styles.body} >
       <ReactMarkdown source={body} />
