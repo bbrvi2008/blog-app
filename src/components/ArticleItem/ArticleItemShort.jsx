@@ -4,20 +4,20 @@ import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import formatDate from 'date-fns/format';
 
-import Tags from '../Tags';
-import Author from '../Author';
-import Like from '../Like';
+import Tags from 'components/Tags';
+import Author from 'components/Author';
+import Like from 'containers/Like';
 
 import styles from './ArticleItem.module.scss';
 
-const ArticleItemShort = ({ slug, title, description, createdAt, tagList, favoritesCount, author }) => {
+const ArticleItemShort = ({ slug, title, description, createdAt, tagList, favorited, favoritesCount, author }) => {
 
   return (<section className={styles.container} >
     <main className={styles.content} >
       <header className={cn(styles.header, styles.row)}>
         <Link to={`/articles/${slug}`} ><h3 className={styles.title} >{title}</h3></Link>
         <span className={cn(styles.date, styles.headerItem)} >{formatDate(new Date(createdAt), "MMMM d, yyyy")}</span>
-        <Like count={favoritesCount} className={styles.headerItem} />
+        <Like slug={slug} active={favorited} count={favoritesCount} className={styles.headerItem} />
       </header>
       <Tags className={styles.row} values={tagList} />
       <p className={cn(styles.desctiption, styles.row)} >{description}</p>

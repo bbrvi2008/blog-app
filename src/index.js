@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import "normalize.css";
 import './index.css';
 
-import BlogApp from './pages/BlogApp';
+import BlogApp from './BlogApp';
 import configureStore from './configureStore';
 
 const store = configureStore();

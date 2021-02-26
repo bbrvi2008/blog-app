@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ArticleItem from '../ArticleItem';
+import ArticleItemShort from 'components/ArticleItem';
 
 import classes from './ArticleList.module.scss';
 
@@ -10,7 +10,7 @@ const ArticleList = ({ articles }) => {
     const { slug } = article;
     return (
       <li key={slug} className={classes.item} >
-        <ArticleItem {...article} />
+        <ArticleItemShort {...article} />
       </li>
     )
   });

@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 import { Alert, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
-import { ArticleItemFull } from '../../components/ArticleItem';
-import { ArticleItemButtons } from '../../components/ArticleItem';
-import Spinner from '../../components/Spinner';
-import { fetchAtricle, deleteAtricle } from '../../reducers/articles';
+import { ArticleItemFull } from 'components/ArticleItem';
+import { ArticleItemButtons } from 'components/ArticleItem';
+import Spinner from 'components/Spinner';
+import { fetchAtricle, deleteAtricle } from 'reducers/articles';
 
 const ArticlePage = ({ article, deleted, editable, loading, error, fetchAtricle, deleteAtricle }) => {
   const { slug } = useParams();

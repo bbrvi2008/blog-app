@@ -1,5 +1,5 @@
-import UserApiService from '../services/UserApiService';
-import StorageValue from '../helpers/StorageValue';
+import UserApiService from 'services/UserApiService';
+import StorageValue from 'helpers/StorageValue';
 
 const userAPI = new UserApiService();
 const userStorable = new StorageValue("userData");

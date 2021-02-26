@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import { createAtricle } from '../reducers/articles';
+import { createAtricle } from 'reducers/articles';
 
-import ArticleForm from '../components/ArticleForm';
+import ArticleForm from 'components/ArticleForm';
 
 const NewArticleForm = ({ loading, error, created, createAtricle }) => {
   const handleSubmit = (article) => {

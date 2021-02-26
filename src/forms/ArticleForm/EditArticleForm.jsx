@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { fetchAtricle, updateAtricle } from '../reducers/articles';
+import { fetchAtricle, updateAtricle } from 'reducers/articles';
 
-import ArticleForm from '../components/ArticleForm';
-import Spinner from '../components/Spinner';
+import ArticleForm from 'components/ArticleForm';
+import Spinner from 'components/Spinner';
 
 const EditArticleForm = ({ article, loading, error, updated, fetchAtricle, updateAtricle }) => {
   const { slug } = useParams();

@@ -7,7 +7,7 @@ export default class ArticlesApiService {
 
   fetchAll = async (page = 1, limit = 20) => {
     const offset = (page - 1) * limit;
-    const { data } = await this.realworldApi.getResource('/articles', {
+    const { data } = await this.realworldApi.getResourceAuthOrAnon('/articles', {
       offset,
       limit
     });
@@ -22,7 +22,7 @@ export default class ArticlesApiService {
   }
 
   fetchItem = async (slug) => {
-    const { data } = await this.realworldApi.getResource(`/articles/${slug}`);
+    const { data } = await this.realworldApi.getResourceAuthOrAnon(`/articles/${slug}`);
     const { article } = data;
 
     return {
@@ -56,6 +56,24 @@ export default class ArticlesApiService {
 
     return {
       item: null,
+      completed: true
+    };
+  }
+
+  favoriteItem = async (slug) => {
+    const { article } = await this.realworldApi.postResourceAuth(`/articles/${slug}/favorite`);
+
+    return {
+      item: article,
+      completed: true
+    };
+  }
+
+  unfavoriteItem = async (slug) => {
+    const { article } = await this.realworldApi.deleteResourceAuth(`/articles/${slug}/favorite`);
+
+    return {
+      item: article,
       completed: true
     };
   }

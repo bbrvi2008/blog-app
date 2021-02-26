@@ -5,7 +5,7 @@ import { Form, Input, Button, Typography, Spin } from 'antd';
 
 import styles from './ProfileForm.module.scss';
 
-import { updateUser } from '../../reducers/user';
+import { updateUser } from 'reducers/user';
 
 const ProfileForm = ({ user, loading, error, hasError, updateUser }) => {
   const history = useHistory();

@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { fetchAtricles } from '../../reducers/articles';
+import { fetchAtricles } from 'reducers/articles';
 
 import { Pagination, Spin, Alert } from 'antd';
-import ArticleList from '../../components/ArticleList';
-import Spinner from '../../components/Spinner';
+import ArticleList from 'components/ArticleList';
+import Spinner from 'components/Spinner';
 
 import styles from './ArticlesPage.module.scss';
 
-const ArticlesPage = ({ items, loading, error, currentPage, countItems, fetchAtricles }) => {
+const ArticlesPage = ({ items, loading, hasData, error, currentPage, countItems, fetchAtricles }) => {
   const [page, setPage] = useState(currentPage);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const ArticlesPage = ({ items, loading, error, currentPage, countItems, fetchAtr
     );
   }
 
-  if(!items?.length && loading) {
+  if(!hasData && loading) {
     return <Spinner />
   }
 
@@ -50,7 +50,8 @@ const ArticlesPage = ({ items, loading, error, currentPage, countItems, fetchAtr
 
 ArticlesPage.defaultProps = {
   items: [], 
-  loading: false, 
+  loading: false,
+  hasData: false,
   error: false, 
   currentPage: 1, 
   countItems: 0,
@@ -59,7 +60,8 @@ ArticlesPage.defaultProps = {
 
 ArticlesPage.propTypes = {
   items: PropTypes.array, 
-  loading: PropTypes.bool, 
+  loading: PropTypes.bool,
+  hasData: PropTypes.bool,
   error: PropTypes.bool, 
   currentPage: PropTypes.number, 
   countItems: PropTypes.number,
@@ -71,7 +73,8 @@ const mapStateToProps = ({ articles }) => {
 
   return {
     items, 
-    loading, 
+    loading,
+    hasData: items.length > 0,
     error, 
     currentPage, 
     countItems

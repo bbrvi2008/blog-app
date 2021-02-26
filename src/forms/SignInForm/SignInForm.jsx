@@ -5,7 +5,7 @@ import { Form, Input, Button, Typography, Spin } from 'antd';
 
 import styles from './SignInForm.module.scss';
 
-import { authenticationUser } from '../../reducers/user';
+import { authenticationUser } from 'reducers/user';
 
 const { Text } = Typography;
 

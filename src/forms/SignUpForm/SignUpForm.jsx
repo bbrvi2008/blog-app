@@ -5,7 +5,7 @@ import { Form, Input, Button, Typography, Divider, Checkbox, Spin } from 'antd';
 
 import styles from './SignUpForm.module.scss';
 
-import { registrationUser } from '../../reducers/user';
+import { registrationUser } from 'reducers/user';
 
 const { Text } = Typography;
 

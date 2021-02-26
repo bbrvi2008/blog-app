@@ -8,13 +8,9 @@ import AuthorizedHeader from './AuthorizedHeader';
 
 import styles from './Header.module.scss';
 
-const Header = ({ isLogIn, user, className, logOutUser }) => {
-  const handleLogOutUser = () => {
-    logOutUser();
-  }
-
-  const menu = isLogIn
-    ? <AuthorizedHeader user={user} onLogOut={handleLogOutUser} />
+const Header = ({ isAuthenticated, user, className, logOutUser }) => {
+  const menu = isAuthenticated
+    ? <AuthorizedHeader user={user} onLogOut={logOutUser} />
     : <AnonymousHeader />;
 
   return (
@@ -26,14 +22,14 @@ const Header = ({ isLogIn, user, className, logOutUser }) => {
 };
 
 Header.defaultProps = {
-  isLogIn: false,
+  isAuthenticated: false,
   user: {},
   className: '',
   logOutUser: () => null
 };
 
 Header.propTypes = {
-  isLogIn: PropTypes.bool,
+  isAuthenticated: PropTypes.bool,
   user: PropTypes.shape({
     username: PropTypes.string,
     image: PropTypes.string

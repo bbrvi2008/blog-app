@@ -1,23 +1,23 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import PrivateRoute from '../../helpers/PrivateRoute';
+import PrivateRoute from 'helpers/PrivateRoute';
 import cn from 'classnames';
 
 import 'antd/dist/antd.css';
-import '../../library.blocks/ant-pagination.css';
+import 'library.blocks/ant-pagination.css';
 import styles from './BlogApp.module.scss';
 
-import Header from '../../containers/Header';
+import Header from 'containers/Header';
 
-import ArticlesPage from '../ArticlesPage';
-import ArticlePage from '../ArticlePage';
+import ArticlesPage from 'pages/ArticlesPage';
+import ArticlePage from 'pages/ArticlePage';
 
-import SignInForm from '../SignInForm';
-import SignUpForm from '../SignUpForm';
-import ProfileForm from '../ProfileForm';
+import SignInForm from 'forms/SignInForm';
+import SignUpForm from 'forms/SignUpForm';
+import ProfileForm from 'forms/ProfileForm';
 
-import NewArticleForm from '../../forms/NewArticleForm';
-import EditArticleForm from '../../forms/EditArticleForm';
+import NewArticleForm from 'forms/ArticleForm/NewArticleForm';
+import EditArticleForm from 'forms/ArticleForm/EditArticleForm';
 
 const BlogApp = () => {
   return (

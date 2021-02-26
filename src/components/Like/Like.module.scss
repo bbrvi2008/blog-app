@@ -12,8 +12,14 @@
   margin-right: 6px;
   width: 16px;
   height: 16px;
-  background-image: url('../../images/Like-empty.svg');
+}
 
+.iconEmpty {
+  background-image: url('../../images/Like-empty.svg');
+}
+
+.iconFilled {
+  background-image: url('../../images/Like-filled.svg');
 }
 
 .text {

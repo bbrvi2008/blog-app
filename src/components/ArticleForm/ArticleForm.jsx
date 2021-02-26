@@ -24,7 +24,7 @@ const ArticleForm = ({ title, article, loading, onSubmit }) => {
 
   return (
     <Form layout="vertical" className={styles.container} initialValues={articleData} onFinish={handleFinish} >
-      <Spin spinning={loading} >
+      <Spin spinning={loading} tip="Submitting..." >
         <Typography.Title level={4} className={styles.title} >{title}</Typography.Title>
         <Form.Item
           name="title"

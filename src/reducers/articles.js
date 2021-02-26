@@ -1,4 +1,4 @@
-import ArticlesApiService from '../services/ArticlesApiService';
+import ArticlesApiService from 'services/ArticlesApiService';
 
 const articlesAPI = new ArticlesApiService();
 
@@ -92,6 +92,26 @@ export const deleteAtricle = (slug) => async dispatch => {
   dispatch(atriclesLoading());
   try {
     const payload = await articlesAPI.deleteItem(slug);
+    dispatch(atriclesReceived(payload));
+  } catch (e) {
+    dispatch(atriclesNotReceived());
+  }
+}
+
+export const favoriteAtricle = (slug) => async dispatch => {
+  dispatch(atriclesLoading());
+  try {
+    const payload = await articlesAPI.favoriteItem(slug);
+    dispatch(atriclesReceived(payload));
+  } catch (e) {
+    dispatch(atriclesNotReceived());
+  }
+}
+
+export const unfavoriteAtricle = (slug) => async dispatch => {
+  dispatch(atriclesLoading());
+  try {
+    const payload = await articlesAPI.unfavoriteItem(slug);
     dispatch(atriclesReceived(payload));
   } catch (e) {
     dispatch(atriclesNotReceived());

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 
-import Author from '../Author';
+import Author from 'components/Author';
 
 import styles from './Header.module.scss';
 
