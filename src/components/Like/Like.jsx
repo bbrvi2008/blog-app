@@ -2,11 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 
+import { message } from 'antd';
+
 import styles from './Like.module.scss';
 
 const Like = ({ slug, count, active, className, isAuthenticated, favorite, unfavorite }) => {
   const handleClick = () => {
     if(!isAuthenticated) {
+      message.warning('Please sign in or register');
       return;
     }
 

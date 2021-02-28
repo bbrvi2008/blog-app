@@ -1,15 +1,24 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { connect, useSelector } from 'react-redux';
 import { Link as RouterLink, Redirect } from 'react-router-dom';
 import { Form, Input, Button, Typography, Spin } from 'antd';
 
 import styles from './SignInForm.module.scss';
 
-import { authenticationUser } from 'reducers/user';
+import { authenticationUser, resetUserStore } from 'reducers/user';
+import { selectLoading, selectHasError, selectIsAuthenticated } from 'selectors/user';
 
 const { Text } = Typography;
 
-const SignInForm = ({ isAuthenticated, loading, hasError, authenticationUser, location }) => {
+const SignInForm = ({ authenticationUser, resetUserStore, location }) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const loading = useSelector(selectLoading);
+  const hasError = useSelector(selectHasError);
+
+  useEffect(() => {
+    resetUserStore();
+  }, [resetUserStore]);
+
   const handleSubmit = (user) => {
     authenticationUser(user);
   }
@@ -79,18 +88,9 @@ const SignInForm = ({ isAuthenticated, loading, hasError, authenticationUser, lo
   );
 };
 
-const mapStateToProps = ({ user }) => {
-  const { loading, error, user: currentUser } = user;
-
-  return {
-    loading,
-    isAuthenticated: currentUser != null,
-    hasError: !loading && error !== null
-  }
-};
-
 const mapDispatchToProps = {
-  authenticationUser
+  authenticationUser,
+  resetUserStore
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignInForm);
+export default connect(null, mapDispatchToProps)(SignInForm);

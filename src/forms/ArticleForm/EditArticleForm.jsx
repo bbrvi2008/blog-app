@@ -1,39 +1,56 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { fetchAtricle, updateAtricle } from 'reducers/articles';
-
+import { message } from 'antd';
 import ArticleForm from 'components/ArticleForm';
+import NotFoundMessage from 'components/NotFoundMessage';
 import Spinner from 'components/Spinner';
 
-const EditArticleForm = ({ article, loading, error, updated, fetchAtricle, updateAtricle }) => {
+import { fetchArticle, updateArticle } from 'reducers/articles';
+import { selectArticle, selectHasArticle, selectIsUpdatedArticle, selectLoading, selectHasError } from 'selectors/articles';
+
+
+const EditArticleForm = ({ fetchArticle, updateArticle }) => {
+  const article = useSelector(selectArticle);
+  const hasArticle = useSelector(selectHasArticle);
+  const hasError = useSelector(selectHasError);
+  const isUpdated = useSelector(selectIsUpdatedArticle);
+  const loading = useSelector(selectLoading);
+
   const { slug } = useParams();
 
   useEffect(() => {
-    fetchAtricle(slug);
-  }, [fetchAtricle, slug]);
+    fetchArticle(slug);
+  }, [fetchArticle, slug]);
+  useEffect(() => {
+    if(hasError) {
+      message.error('No network connection');
+    }
+  }, [hasError]);
 
   const handleSubmit = (articleData) => {
-    updateAtricle({
+    updateArticle({
       ...article,
       ...articleData
     });
   };
 
-  if(updated) {
-    console.log('updated', updated);
-
+  if(isUpdated) {
     return (
       <Redirect  to={`/articles/${slug}`} />
     )
   }
 
-  if(article === null && loading) {
+  if(!hasArticle && loading) {
     return <Spinner />;
   }
 
-  if(article === null) return null;
+  if(!hasArticle) {
+    return (
+      <NotFoundMessage />
+    ) 
+  }
 
   return (
     <ArticleForm title="Create new article" article={article} loading={loading} onSubmit={handleSubmit}  />
@@ -41,8 +58,8 @@ const EditArticleForm = ({ article, loading, error, updated, fetchAtricle, updat
 };
 
 const mapDispatchToProps = {
-  fetchAtricle,
-  updateAtricle
+  fetchArticle,
+  updateArticle
 };
 
 const mapStateToProps = ({ articles }) => {

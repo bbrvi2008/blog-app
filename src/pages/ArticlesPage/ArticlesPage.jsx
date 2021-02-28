@@ -1,27 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
-import { fetchAtricles } from 'reducers/articles';
-
-import { Pagination, Spin, Alert } from 'antd';
+import { Pagination, Spin, Alert, message } from 'antd';
 import ArticleList from 'components/ArticleList';
 import Spinner from 'components/Spinner';
 
 import styles from './ArticlesPage.module.scss';
 
-const ArticlesPage = ({ items, loading, hasData, error, currentPage, countItems, fetchAtricles }) => {
+import { fetchArticles } from 'reducers/articles';
+import { fetchArticles as fetchArticlesAction } from 'reducers/articles';
+import { selectArticles, selectLoadingByActionType, selectHasArticles, selectHasError, selectCurrentPage, selectCountItems } from 'selectors/articles';
+
+const ArticlesPage = ({ fetchArticles }) => {
+  const articles = useSelector(selectArticles);
+  const loading = useSelector(selectLoadingByActionType(fetchArticlesAction.typePrefix));
+  const hasData = useSelector(selectHasArticles);
+  const hasError = useSelector(selectHasError);
+  const currentPage = useSelector(selectCurrentPage);
+  const countItems = useSelector(selectCountItems);
+
   const [page, setPage] = useState(currentPage);
 
   useEffect(() => {
-    fetchAtricles(page);
-  }, [fetchAtricles, page]);
+    fetchArticles(page);
+  }, [fetchArticles, page]);
+  useEffect(() => {
+    if(hasData && hasError) {
+      message.error('No network connection');
+    }
+  }, [hasData, hasError]);
 
   const handleChangePage = selectedPage => {
     setPage(selectedPage);
   };
 
-  if(error) {
+  if(!hasData && hasError) {
     return (
       <Alert message="Error loading data" type="error" showIcon />
     );
@@ -34,13 +48,13 @@ const ArticlesPage = ({ items, loading, hasData, error, currentPage, countItems,
   return (
     <>
       <Spin spinning={loading} size="large" tip="Loading..." >
-        <ArticleList articles={items} />
+        <ArticleList articles={articles} />
       </Spin>
       <Pagination className={styles.pagination} 
           size="small"
           hideOnSinglePage
           showSizeChanger={false}
-          current={page}
+          current={currentPage}
           defaultPageSize={20}
           total={countItems}
           onChange={handleChangePage} />
@@ -49,36 +63,11 @@ const ArticlesPage = ({ items, loading, hasData, error, currentPage, countItems,
 };
 
 ArticlesPage.defaultProps = {
-  items: [], 
-  loading: false,
-  hasData: false,
-  error: false, 
-  currentPage: 1, 
-  countItems: 0,
-  fetchAtricles: () => null
+  fetchArticles: () => null
 }
 
 ArticlesPage.propTypes = {
-  items: PropTypes.array, 
-  loading: PropTypes.bool,
-  hasData: PropTypes.bool,
-  error: PropTypes.bool, 
-  currentPage: PropTypes.number, 
-  countItems: PropTypes.number,
-  fetchAtricles: PropTypes.func
+  fetchArticles: PropTypes.func
 }
 
-const mapStateToProps = ({ articles }) => {
-  const { items, loading, error, currentPage, countItems } = articles;
-
-  return {
-    items, 
-    loading,
-    hasData: items.length > 0,
-    error, 
-    currentPage, 
-    countItems
-  };
-}
-
-export default connect(mapStateToProps, { fetchAtricles })(ArticlesPage);
+export default connect(null, { fetchArticles })(ArticlesPage);

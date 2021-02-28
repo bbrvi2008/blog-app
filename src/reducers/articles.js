@@ -1,119 +1,156 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
 import ArticlesApiService from 'services/ArticlesApiService';
+import * as RequestStatus from 'helpers/RequestStatus';
+import { isFulfilledAction, isRejectedAction, isPendingAction, getActionType } from './helpers';
 
 const articlesAPI = new ArticlesApiService();
 
-const ARTICLES_FETCH = 'articles:fetch';
-const ARTICLES_FETCH_FAILURE = 'articles:fetch-failure';
-const ARTICLES_FETCH_SUCCESS = 'articles:fetch-success';
+export const fetchArticles = createAsyncThunk(
+  'articles/fetchList',
+  async (page) => {
+    const { data } = await articlesAPI.fetchAll(page);
 
-
-const initialState = {
-  items: [],
-  item: null,
-  countItems: 0,
-  currentPage: 1,
-  error: false,
-  loading: false,
-  completed: false
-};
-
-export default function reducer(state = initialState, { type, payload }) {
-  switch (type) {
-    case ARTICLES_FETCH:
-      return {
-        ...state,
-        item: null,
-        loading: true,
-        completed: false
-      };
-    case ARTICLES_FETCH_SUCCESS:
-      return {
-        ...state,
-        ...payload,
-        loading: false
-      };
-    case ARTICLES_FETCH_FAILURE:
-      return {
-        ...state,
-        error: true,
-        loading: false
-      };
-
-    default:
-      return state;
+    const { articles, articlesCount } = data;
+    return {
+      currentPage: page,
+      articlesCount,
+      articles
+    };
   }
-}
+);
 
-const atriclesLoading = () => ({type: ARTICLES_FETCH});
-const atriclesNotReceived = () => ({type: ARTICLES_FETCH_FAILURE});
-const atriclesReceived = (payload) => ({type: ARTICLES_FETCH_SUCCESS, payload});
+export const fetchArticle = createAsyncThunk(
+  'articles/fetchArticle',
+  async (slug) => {
+    const { data } = await articlesAPI.fetchItem(slug);
 
-export const fetchAtricles = (page) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.fetchAll(page);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
+    return data;
   }
-}
+);
 
-export const fetchAtricle = (slug) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.fetchItem(slug);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
-  }
-}
+export const createArticle = createAsyncThunk(
+  'articles/createArticle',
+  async (articleData) => {
+    const { data } = await articlesAPI.createItem(articleData);
 
-export const createAtricle = (articleData) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.createItem(articleData);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
+    return data;
   }
-}
+);
 
-export const updateAtricle = (articleData) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.updateItem(articleData);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
-  }
-}
+export const updateArticle = createAsyncThunk(
+  'articles/updateArticle',
+  async (articleData) => {
+    const { data } = await articlesAPI.updateItem(articleData);
 
-export const deleteAtricle = (slug) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.deleteItem(slug);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
+    return data;
   }
-}
+);
 
-export const favoriteAtricle = (slug) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.favoriteItem(slug);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
+export const deleteArticle = createAsyncThunk(
+  'articles/deleteArticle',
+  async (slug) => {
+    await articlesAPI.deleteItem(slug);
   }
-}
+);
 
-export const unfavoriteAtricle = (slug) => async dispatch => {
-  dispatch(atriclesLoading());
-  try {
-    const payload = await articlesAPI.unfavoriteItem(slug);
-    dispatch(atriclesReceived(payload));
-  } catch (e) {
-    dispatch(atriclesNotReceived());
+export const favoriteArticle = createAsyncThunk(
+  'articles/favoriteArticle',
+  async (slug) => {
+    const { data } = await articlesAPI.favoriteItem(slug);
+
+    return data;
   }
-}
+);
+
+export const unfavoriteArticle = createAsyncThunk(
+  'articles/unfavoriteArticle',
+  async (slug) => {
+    const { data } = await articlesAPI.unfavoriteItem(slug);
+
+    return data;
+  }
+);
+
+const articlesSlice = createSlice({
+  name: 'articles',
+  initialState: {
+    items: [],
+    item: null,
+    countItems: 0,
+    currentPage: 1,
+    action: {
+      type: '',
+      status: RequestStatus.IDLE,
+      error: null
+    }
+  },
+  reducers: {
+
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(
+        fetchArticles.fulfilled,
+        (state, { payload }) => {
+          const { articles, articlesCount, currentPage } = payload;
+          state.items = articles;
+          state.countItems = articlesCount;
+          state.currentPage = currentPage;
+        }
+      )
+      .addCase(
+        fetchArticle.fulfilled,
+        (state, { payload }) => {
+          const { article } = payload;
+          state.item = article;
+        }
+      )
+      .addCase(
+        favoriteArticle.fulfilled,
+        (state, { payload }) => {
+          const { article: articleData } = payload;
+          state.item = articleData;
+          if(state.items.length > 0) {
+            const index = state.items.findIndex(article => article.slug === articleData.slug);
+            state.items[index] = articleData;
+          }
+        }
+      )
+      .addCase(
+        unfavoriteArticle.fulfilled,
+        (state, { payload }) => {
+          const { article: articleData } = payload;
+          state.item = articleData;
+          if(state.items.length > 0) {
+            const index = state.items.findIndex(article => article.slug === articleData.slug);
+            state.items[index] = articleData;
+          }
+        }
+      )
+      .addMatcher(
+        isPendingAction("articles/"),
+        (state, action) => {
+          state.action.type = getActionType(action);
+          state.action.status = RequestStatus.LOADING;
+        }
+      )
+      .addMatcher(
+        isFulfilledAction("articles/"),
+        (state, action) => {
+          state.action.type = getActionType(action);
+          state.action.status = RequestStatus.SUCCESS;
+        }
+      )
+      .addMatcher(
+        isRejectedAction("articles/"),
+        (state, action) => {
+          state.action.type = getActionType(action);
+          state.action.status = RequestStatus.FAILURE;
+        }
+      )
+  }
+});
+
+export default articlesSlice.reducer;
+// export const { } = articlesSlice.actions;

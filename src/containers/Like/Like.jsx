@@ -1,20 +1,22 @@
-import { connect } from 'react-redux';
+import React from 'react';
+import { connect, useSelector } from 'react-redux';
 
 import Like from 'components/Like';
 
-import { favoriteAtricle as favorite, unfavoriteAtricle as unfavorite } from 'reducers/articles';
+import { favoriteArticle as favorite, unfavoriteArticle as unfavorite } from 'reducers/articles';
+import { selectIsAuthenticated } from 'selectors/user';
+
+const LikeContainer = (props) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  
+  return (
+    <Like {...props} isAuthenticated={isAuthenticated} />
+  )
+}
 
 const mapDispatchToProps = {
   favorite,
   unfavorite
 };
 
-const mapStateToProps = ({ user }) => {
-  const { user: currentUser } = user;
-
-  return {
-    isAuthenticated: currentUser !== null
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Like);
+export default connect(null, mapDispatchToProps)(LikeContainer);

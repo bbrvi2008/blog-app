@@ -1,23 +1,39 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useParams, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Alert, Modal } from 'antd';
+import { connect, useSelector } from 'react-redux';
+import { Alert, Modal, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { ArticleItemFull } from 'components/ArticleItem';
 import { ArticleItemButtons } from 'components/ArticleItem';
+import NotFoundMessage from 'components/NotFoundMessage';
 import Spinner from 'components/Spinner';
-import { fetchAtricle, deleteAtricle } from 'reducers/articles';
 
-const ArticlePage = ({ article, deleted, editable, loading, error, fetchAtricle, deleteAtricle }) => {
+import { fetchArticle, deleteArticle } from 'reducers/articles';
+import { fetchArticle as fetchArticleAction } from 'reducers/articles';
+import { selectArticle, selectHasArticle, selectLoadingByActionType, selectHasError, selectIsDeletedArticle, selectIsEditableArticle } from 'selectors/articles';
+
+const ArticlePage = ({ fetchArticle, deleteArticle }) => {
+  const article = useSelector(selectArticle);
+  const loading = useSelector(selectLoadingByActionType(fetchArticleAction.typePrefix));
+  const hasArticle = useSelector(selectHasArticle);
+  const hasError = useSelector(selectHasError);
+  const isDeleted = useSelector(selectIsDeletedArticle);
+  const isEditable = useSelector(selectIsEditableArticle);
+
   const { slug } = useParams();
 
   useEffect(() => {
-    fetchAtricle(slug);
-  }, [fetchAtricle, slug]);
+    fetchArticle(slug);
+  }, [fetchArticle, slug]);
+  useEffect(() => {
+    if(hasArticle && hasError) {
+      message.error('No network connection');
+    }
+  }, [hasArticle, hasError]);
 
-  const showDeleteConfirm = () => {
+  const handleDelete = () => {
     Modal.confirm({
       title: 'Are you sure to delete this article?',
       icon: <ExclamationCircleOutlined />,
@@ -25,16 +41,12 @@ const ArticlePage = ({ article, deleted, editable, loading, error, fetchAtricle,
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        deleteAtricle(slug);
+        deleteArticle(slug);
       }
-    })
+    });
   }
 
-  const handleDelete = () => {
-    showDeleteConfirm();
-  }
-
-  if(deleted) {
+  if(isDeleted) {
     return (
       <Redirect to="/" />
     );
@@ -46,15 +58,19 @@ const ArticlePage = ({ article, deleted, editable, loading, error, fetchAtricle,
     )
   }
 
-  if(error) {
+  if(!hasArticle && hasError) {
     return (
       <Alert message="Error loading data" type="error" showIcon />
     );
   }
 
-  if(article === null) return null;
+  if(!hasArticle) {
+    return (
+      <NotFoundMessage />
+    )
+  }
 
-  let editButtons = editable
+  let editButtons = isEditable
     ? <ArticleItemButtons slug={slug} onDelete={handleDelete} />
     : null;
 
@@ -66,37 +82,13 @@ const ArticlePage = ({ article, deleted, editable, loading, error, fetchAtricle,
 };
 
 ArticlePage.defaultProps = {
-  article: {}, 
-  loading: false, 
-  error: false, 
-  fetchAtricle: () => null
+  fetchArticle: () => null,
+  deleteArticle: () => null
 }
 
 ArticlePage.propTypes = {
-  article: PropTypes.object, 
-  loading: PropTypes.bool, 
-  error: PropTypes.bool, 
-  fetchAtricle: PropTypes.func
+  fetchArticle: PropTypes.func,
+  deleteArticle: PropTypes.func
 }
 
-const mapStateToProps = ({ articles, user }) => {
-  const { item: article = {}, loading, error, completed } = articles;
-
-  let editable = false;
-  if(article?.author && user?.user) {
-    const { author } = article;
-    const { user: currentUser } = user;
-
-    editable = author.username === currentUser.username;
-  }
-  
-  return {
-    article,
-    editable,
-    deleted: completed,
-    loading,
-    error, 
-  };
-}
-
-export default connect(mapStateToProps, { fetchAtricle, deleteAtricle })(ArticlePage);
+export default connect(null, { fetchArticle, deleteArticle })(ArticlePage);

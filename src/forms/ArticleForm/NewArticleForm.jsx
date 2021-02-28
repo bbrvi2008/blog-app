@@ -1,17 +1,30 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { connect, useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import { createAtricle } from 'reducers/articles';
-
+import { message } from 'antd';
 import ArticleForm from 'components/ArticleForm';
 
-const NewArticleForm = ({ loading, error, created, createAtricle }) => {
+import { createArticle } from 'reducers/articles';
+import { selectLoading, selectIsCreatedArticle, selectHasError } from 'selectors/articles';
+
+
+const NewArticleForm = ({ createArticle }) => {
+  const loading = useSelector(selectLoading);
+  const isCreated = useSelector(selectIsCreatedArticle);
+  const hasError = useSelector(selectHasError);
+
+  useEffect(() => {
+    if(hasError) {
+      message.error('No network connection');
+    }
+  }, [hasError]);
+
   const handleSubmit = (article) => {
-    createAtricle(article);
+    createArticle(article);
   };
 
-  if(created) {
+  if(isCreated) {
     return (
       <Redirect  to="/" />
     )
@@ -23,17 +36,7 @@ const NewArticleForm = ({ loading, error, created, createAtricle }) => {
 };
 
 const mapDispatchToProps = {
-  createAtricle
+  createArticle
 };
 
-const mapStateToProps = ({ articles }) => {
-  const { completed, loading, erorr } = articles;
-
-  return {
-    loading,
-    created: completed,
-    erorr
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewArticleForm);
+export default connect(null, mapDispatchToProps)(NewArticleForm);

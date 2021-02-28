@@ -1,18 +1,20 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { connect, useSelector } from 'react-redux';
 import { Form, Input, Button, Typography, Spin } from 'antd';
 
 import styles from './ProfileForm.module.scss';
 
 import { updateUser } from 'reducers/user';
+import { selectIsAuthenticated, selectLoading, selectUser } from 'selectors/user';
 
-const ProfileForm = ({ user, loading, error, hasError, updateUser }) => {
-  const history = useHistory();
-
-  if (user === null) {
-    history.push('/sign-in');
-    return null;
+const ProfileForm = ({ updateUser }) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const loading = useSelector(selectLoading);
+  const user = useSelector(selectUser);
+  
+  if (!isAuthenticated) {
+    return <Redirect to="/sign-in" />;
   }
 
   const handleSubmit = (data) => {
@@ -69,20 +71,8 @@ const ProfileForm = ({ user, loading, error, hasError, updateUser }) => {
   )
 };
 
-const mapStateToProps = ({ user }) => {
-  const { user: userData, loading, error } = user;
-
-  return {
-    user: userData,
-    isLogIn: userData !== null,
-    loading,
-    error,
-    hasError: !loading && error !== null
-  }
-};
-
 const mapDispatchToProps = {
   updateUser
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileForm);
+export default connect(null, mapDispatchToProps)(ProfileForm);

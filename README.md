@@ -1,1 +1,1 @@
-Blog App [Open site]().
+Blog App [Open site](https://blog-app-wine-kappa.vercel.app/).

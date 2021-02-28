@@ -1,16 +1,25 @@
-import React  from 'react';
-import { connect } from 'react-redux';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import React, { useEffect }  from 'react';
+import { connect, useSelector } from 'react-redux';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 import { Form, Input, Button, Typography, Divider, Checkbox, Spin } from 'antd';
 
 import styles from './SignUpForm.module.scss';
 
-import { registrationUser } from 'reducers/user';
+import { registrationUser, resetUserStore } from 'reducers/user';
+import { selectIsAuthenticated, selectLoading, selectCompleted, selectHasError, selectError } from 'selectors/user';
 
 const { Text } = Typography;
 
-const SignUpForm = ({ loading, hasError, error, registrationUser }) => {
-  let history = useHistory();
+const SignUpForm = ({ registrationUser, resetUserStore }) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const loading = useSelector(selectLoading);
+  const completed = useSelector(selectCompleted);
+  const hasError = useSelector(selectHasError);
+  const error = useSelector(selectError);
+
+  useEffect(() => {
+    resetUserStore();
+  }, [resetUserStore])
 
   const handleSubmit = ({ username, email, password }) => {
     registrationUser({
@@ -18,8 +27,10 @@ const SignUpForm = ({ loading, hasError, error, registrationUser }) => {
       email,
       password
     });
+  }
 
-    history.push('/');
+  if(completed || isAuthenticated) {
+    return <Redirect to="/" />
   }
 
   return (
@@ -99,18 +110,9 @@ const SignUpForm = ({ loading, hasError, error, registrationUser }) => {
   )
 };
 
-const mapStateToProps = ({ user }) => {
-  const { loading, error } = user
-
-  return {
-    loading,
-    hasError: !loading && error !== null,
-    error
-  }
-}
-
 const mapDispatchToProps = {
-  registrationUser
+  registrationUser,
+  resetUserStore
 };
 
-export default  connect(mapStateToProps, mapDispatchToProps)(SignUpForm);
+export default  connect(null, mapDispatchToProps)(SignUpForm);

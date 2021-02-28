@@ -1,80 +1,87 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
 import UserApiService from 'services/UserApiService';
 import StorageValue from 'helpers/StorageValue';
+import * as RequestStatus from 'helpers/RequestStatus';
+import { isFulfilledAction, isRejectedAction, isPendingAction } from './helpers';
 
 const userAPI = new UserApiService();
 const userStorable = new StorageValue("userData");
 
-const USER_FETCH_PENDING = 'user:fetch-pending';
-const USER_FETCH_SUCCESS = 'user:fetch-success';
-const USER_FETCH_ERROR = 'user:fetch-error';
-const USER_LOGOUT = 'user:logout';
-
-const initialState = {
-  user: userStorable.getValue(),
-  loading: false,
-  error: null
-};
-
-export default function reducer(state = initialState, { type, payload }) {
-  switch (type) {
-    case USER_FETCH_PENDING:
-      return {
-        ...state,
-        loading: true
-      };
-    case USER_FETCH_SUCCESS:
-      return {
-        ...state,
-        error: null,
-        loading: false,
-        user: payload
-      }
-    case USER_FETCH_ERROR:
-      return {
-        ...state,
-        loading: false,
-        error: payload
-      }
-    case USER_LOGOUT:
-      return {
-        ...state,
-        user: null
-      }
-  
-    default:
-      return state;
-  }
-}
-
-const fetchUserPending = () => ({ type: USER_FETCH_PENDING });
-const fetchUserSuccess = (payload) => ({ type: USER_FETCH_SUCCESS, payload });
-const fetchUserError = (payload) => ({ type: USER_FETCH_ERROR, payload });
-const logOut = () => ({ type: USER_LOGOUT });
-
-const createUserAction = request => user => async dispatch => {
-  dispatch(fetchUserPending());
-  try {
-    const { success, data } = await request(user);
-    if(success) {
-      const { user: responseUser } = data;
-      
-      userStorable.setValue(responseUser);
-      dispatch(fetchUserSuccess(responseUser));
-    } else {
-      const { errors } = data;
-      dispatch(fetchUserError(errors));
+const userAction = request => {
+  return async (userData, { rejectWithValue }) => {
+    const { data, success } = await request(userData);
+    if(!success) {
+      return rejectWithValue(data);
     }
-  } catch (e) {
-    dispatch(fetchUserError());
+
+    const { user } = data;
+    userStorable.setValue(user);
+
+    return data;
   }
 }
 
-export const registrationUser = createUserAction(userAPI.registration);
-export const authenticationUser = createUserAction(userAPI.authentication);
-export const updateUser = createUserAction(userAPI.updateUser);
+export const registrationUser = createAsyncThunk(
+  'user/registrationUser',
+  userAction(userAPI.registration)
+);
 
+export const authenticationUser = createAsyncThunk(
+  'user/authenticationUser',
+  userAction(userAPI.authentication)
+);
 
-export const logOutUser = () => {
-  userStorable.removeValue();
-  return logOut();
-}
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  userAction(userAPI.updateUser)
+);
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    user: userStorable.getValue(),
+    error: null,
+    status: RequestStatus.IDLE
+  },
+  reducers: {
+    resetUserStore: (state, action) => {
+      state.status = RequestStatus.IDLE;
+      state.error = null;
+    },
+    logOutUser: (state, action) => {
+      state.user = null;
+      userStorable.removeValue();
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addMatcher(
+        isPendingAction("user/"),
+        (state, action) => {
+          state.status = RequestStatus.LOADING;
+        }
+      )
+      .addMatcher(
+        isFulfilledAction("user/"),
+        (state, { payload }) => {
+          state.status = RequestStatus.SUCCESS;
+
+          const { user } = payload;
+          state.user = user;
+        }
+      )
+      .addMatcher(
+        isRejectedAction("user/"),
+        (state, { payload }) => {
+          state.status = RequestStatus.FAILURE;
+
+          const { errors } = payload;
+          state.error = errors;
+        }
+      )
+  }
+});
+
+export default userSlice.reducer;
+export const { logOutUser, resetUserStore } = userSlice.actions;

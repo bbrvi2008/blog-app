@@ -1,3 +1,5 @@
+import { IsJsonString } from './Utils';
+
 export default class StorageValue {
   constructor(valueName) {
     this.valueName = valueName;
@@ -5,7 +7,7 @@ export default class StorageValue {
 
   getValue(checkActual = () => true) {
     const value = localStorage.getItem(this.valueName);
-    if(value === null) return null;
+    if(!IsJsonString(value)) return null;
 
     const json = JSON.parse(value);
     
